@@ -53,3 +53,24 @@ class Payment(models.Model):
                                     related_name='payment')
     amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Сумма оплаты')
     payment_type = models.CharField(max_length=20, choices=PaymentType.choices, verbose_name="Способ оплаты")
+
+    def __str__(self):
+        return f'{self.user} - {self.pay_date}'
+
+    class Meta:
+        """Класс отображения метаданных"""
+        verbose_name = 'Платеж'
+        verbose_name_plural = 'Платежи'
+
+        constraints = [
+            models.CheckConstraint(
+                check=models.Q(
+                    paid_course__isnull=True,
+                    paid_lesson__isnull=False
+                ) | models.Q(
+                    paid_course__isnull=False,
+                    paid_lesson__isnull=True
+                ),
+                name='one_of_course_or_lesson_have_to_be_set'
+            )
+        ]
