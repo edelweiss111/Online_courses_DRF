@@ -13,8 +13,10 @@ class UserUpdateAPIView(generics.UpdateAPIView):
 
 
 class UserRetrieveAPIView(generics.RetrieveAPIView):
-    serializer_class = UserSerializer
     queryset = User.objects.all()
 
-    # def get_serializer(self, *args, **kwargs):
+    def get_serializer_class(self):
+        if self.request.user == self.get_object():
+            return OwnerSerializer
+        return UserSerializer
 
