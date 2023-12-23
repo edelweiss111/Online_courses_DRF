@@ -3,7 +3,7 @@ from rest_framework import viewsets, generics
 from rest_framework.filters import OrderingFilter
 
 from study.models import Course, Lesson, Payment
-from study.permissions import IsModerator, IsOwner, IsNotModerator
+from study.permissions import IsModerator, IsOwner
 from study.serializers import CourseSerializer, LessonSerializer, PaymentSerializer
 
 
