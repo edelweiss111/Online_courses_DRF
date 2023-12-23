@@ -7,7 +7,7 @@ from users.serializers import UserSerializer, OwnerSerializer
 
 
 class UserUpdateAPIView(generics.UpdateAPIView):
-    serializer_class = UserSerializer
+    serializer_class = OwnerSerializer
     queryset = User.objects.all()
     permission_classes = [IsOwner]
 
@@ -15,4 +15,6 @@ class UserUpdateAPIView(generics.UpdateAPIView):
 class UserRetrieveAPIView(generics.RetrieveAPIView):
     serializer_class = UserSerializer
     queryset = User.objects.all()
+
+    # def get_serializer(self, *args, **kwargs):
 
