@@ -5,6 +5,7 @@ NULLABLE = {'blank': True, 'null': True}
 
 
 class Subscription(models.Model):
+    """Модедь подписки"""
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name='Пользователь',
                              related_name='subscription')
     course = models.ForeignKey('Course', on_delete=models.CASCADE, verbose_name='Курс', related_name='subscription')
@@ -26,6 +27,8 @@ class Course(models.Model):
 
     owner = models.ForeignKey('users.User', on_delete=models.CASCADE, verbose_name='Владелец', default=1)
 
+    amount = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name='Стоимость')
+
     def __str__(self):
         return f'{self.name}'
 
@@ -45,6 +48,8 @@ class Lesson(models.Model):
     course = models.ForeignKey('Course', on_delete=models.SET_NULL, **NULLABLE, verbose_name='Курс',
                                related_name='lesson')
     owner = models.ForeignKey('users.User', on_delete=models.CASCADE, verbose_name='Владелец', default=1)
+
+    amount = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name='Стоимость')
 
     def __str__(self):
         return f'{self.name}'
@@ -71,6 +76,9 @@ class Payment(models.Model):
                                     related_name='payment')
     amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Сумма оплаты')
     payment_type = models.CharField(max_length=20, choices=PaymentType.choices, verbose_name="Способ оплаты")
+
+    session_id = models.PositiveIntegerField(default=0, verbose_name='id сессии')
+    is_paid = models.BooleanField(default=False, verbose_name='статус платежа')
 
     def __str__(self):
         return f'{self.user} - {self.pay_date}'

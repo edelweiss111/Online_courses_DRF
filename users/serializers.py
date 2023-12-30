@@ -5,6 +5,7 @@ from users.models import User
 
 
 class OwnerSerializer(serializers.ModelSerializer):
+    """Сериалайзер модели пользователя для владельца"""
     payment_list = PaymentSerializer(read_only=True, many=True)
 
     class Meta:
@@ -13,7 +14,7 @@ class OwnerSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-
+    """Сериалайзер модели пользователя для всех"""
     class Meta:
         model = User
         exclude = ('password', 'last_name')

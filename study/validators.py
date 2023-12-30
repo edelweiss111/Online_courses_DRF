@@ -4,6 +4,7 @@ from rest_framework.serializers import ValidationError
 
 
 class VideoUrlValidator:
+    """Валидатор поля VideoUrl модели Course"""
     def __init__(self, field):
         self.field = field
 
