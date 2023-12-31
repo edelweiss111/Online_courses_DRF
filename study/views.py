@@ -90,7 +90,6 @@ class PayLessonAPIView(generics.CreateAPIView):
         lesson_pk = self.kwargs.get('pk')
         new_payment.paid_lesson = Lesson.objects.get(pk=lesson_pk)
         session = create_payment(new_payment.paid_lesson, new_payment.user)
-        print(session)
         new_payment.session_id = session.id
         new_payment.payment_url = session.url
         new_payment.save()
@@ -106,7 +105,6 @@ class PayCourseAPIView(generics.CreateAPIView):
         course_pk = self.kwargs.get('pk')
         new_payment.paid_course = Course.objects.get(pk=course_pk)
         session = create_payment(new_payment.paid_course, new_payment.user)
-        print(session)
         new_payment.session_id = session.id
         new_payment.payment_url = session.url
         new_payment.save()
@@ -121,7 +119,6 @@ class CheckPaymentAPIView(generics.RetrieveAPIView):
         self.object = super().get_object()
         session_id = self.object.session_id
         session = check_payment(session_id)
-        print(session)
         if session.payment_status == 'paid' or session.payment_status == 'complete':
             self.object.is_paid = True
         self.object.save()
