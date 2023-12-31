@@ -4,7 +4,7 @@ from rest_framework.routers import DefaultRouter
 from study.apps import StudyConfig
 from study.views import CourseViewSet, LessonCreateAPIView, LessonListAPIView, LessonRetrieveAPIView, \
     LessonUpdateAPIView, LessonDestroyAPIView, PaymentListAPIView, SubscriptionCreateAPIView, \
-    SubscriptionDestroyAPIView, PayLessonAPIView
+    SubscriptionDestroyAPIView, PayLessonAPIView, CheckPaymentAPIView, PayCourseAPIView
 
 app_name = StudyConfig.name
 router = DefaultRouter()
@@ -20,7 +20,8 @@ urlpatterns = [
 
     path('payments/', PaymentListAPIView.as_view(), name='payment_list'),
     path('pay_lesson/<int:pk>/', PayLessonAPIView.as_view(), name='pay_lesson'),
-    # path('pay_course/<int:pk>/', PaymentListAPIView.as_view(), name='pay_course'),
+    path('pay_course/<int:pk>/', PayCourseAPIView.as_view(), name='pay_course'),
+    path('check_pay/<int:pk>/', CheckPaymentAPIView.as_view(), name='check_pay'),
 
     path('courses/create_sub/<int:pk>/', SubscriptionCreateAPIView.as_view(), name='subscription_create'),
     path('courses/delete_sub/<int:pk>/', SubscriptionDestroyAPIView.as_view(), name='subscription_delete'),

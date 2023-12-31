@@ -68,17 +68,18 @@ class Payment(models.Model):
         TRANSFER_TO_ACCOUNT = 'TRANSFER_TO_ACCOUNT', 'Перевод на счет'
 
     user = models.ForeignKey('users.User', on_delete=models.CASCADE, verbose_name='Пользователь',
-                             related_name='payment_list')
+                             related_name='payment_list', default=1)
     pay_date = models.DateField(auto_now_add=True, verbose_name='Дата платежа')
     paid_course = models.ForeignKey('Course', on_delete=models.CASCADE, **NULLABLE, verbose_name='Оплаченный курс',
                                     related_name='payment')
     paid_lesson = models.ForeignKey('Lesson', on_delete=models.CASCADE, **NULLABLE, verbose_name='Оплаченный урок',
                                     related_name='payment')
-    amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Сумма оплаты')
-    payment_type = models.CharField(max_length=20, choices=PaymentType.choices, verbose_name="Способ оплаты")
+    amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Сумма оплаты', **NULLABLE)
+    payment_type = models.CharField(max_length=20, choices=PaymentType.choices, default='TRANSFER_TO_ACCOUNT',verbose_name="Способ оплаты")
 
-    session_id = models.PositiveIntegerField(default=0, verbose_name='id сессии')
+    session_id = models.CharField(max_length=150, **NULLABLE, verbose_name='id сессии')
     is_paid = models.BooleanField(default=False, verbose_name='статус платежа')
+    payment_url = models.TextField(**NULLABLE, verbose_name='ссылка на оплату')
 
     def __str__(self):
         return f'{self.user} - {self.pay_date}'
