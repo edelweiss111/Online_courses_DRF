@@ -2,8 +2,15 @@ import os
 
 import stripe
 
+import smtplib
+
+from django.core.mail import send_mail
+
+from config.settings import EMAIL_HOST_USER
+
 
 def create_payment(obj, user):
+    """Функция создания сессии платежа"""
     stripe.api_key = os.getenv('STRIPE_API_KEY')
     create_product = stripe.Product.create(
         name=obj.name,
@@ -30,8 +37,23 @@ def create_payment(obj, user):
 
 
 def check_payment(session_id):
+    """Функция проверки платежа"""
     stripe.api_key = os.getenv('STRIPE_API_KEY')
 
     session = stripe.checkout.Session.retrieve(session_id)
 
     return session
+
+
+def send_mailing(client_list, subject, body):
+    """Функция отправки письма"""
+    try:
+        response = send_mail(
+            subject,
+            body,
+            EMAIL_HOST_USER,
+            client_list
+        )
+        return response
+    except smtplib.SMTPException:
+        raise smtplib.SMTPException

@@ -7,6 +7,7 @@ from study.pagination import CourseAndLessonPagination
 from study.permissions import IsModerator, IsOwner
 from study.serializers import CourseSerializer, LessonSerializer, PaymentSerializer, SubscriptionSerializer
 from study.servises import create_payment, check_payment
+from study.tasks import mailing_about_updates
 
 
 class CourseViewSet(viewsets.ModelViewSet):
@@ -30,6 +31,10 @@ class CourseViewSet(viewsets.ModelViewSet):
         new_course = serializer.save()
         new_course.owner = self.request.user
         new_course.save()
+
+    def perform_update(self, serializer):
+        course = serializer.save()
+        mailing_about_updates.delay(course.pk)
 
 
 class LessonCreateAPIView(generics.CreateAPIView):
@@ -63,6 +68,10 @@ class LessonUpdateAPIView(generics.UpdateAPIView):
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
     permission_classes = [IsModerator | IsOwner]
+
+    def perform_update(self, serializer):
+        lesson = serializer.save()
+        mailing_about_updates.delay(lesson.course.pk)
 
 
 class LessonDestroyAPIView(generics.DestroyAPIView):

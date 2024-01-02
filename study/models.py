@@ -28,6 +28,7 @@ class Course(models.Model):
     owner = models.ForeignKey('users.User', on_delete=models.CASCADE, verbose_name='Владелец', default=1)
 
     amount = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name='Стоимость')
+    date_modified = models.DateTimeField(verbose_name='Дата изменения')
 
     def __str__(self):
         return f'{self.name}'
@@ -50,6 +51,8 @@ class Lesson(models.Model):
     owner = models.ForeignKey('users.User', on_delete=models.CASCADE, verbose_name='Владелец', default=1)
 
     amount = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name='Стоимость')
+
+    date_modified = models.DateTimeField(auto_now=True, verbose_name='Дата изменения')
 
     def __str__(self):
         return f'{self.name}'
@@ -75,7 +78,8 @@ class Payment(models.Model):
     paid_lesson = models.ForeignKey('Lesson', on_delete=models.CASCADE, **NULLABLE, verbose_name='Оплаченный урок',
                                     related_name='payment')
     amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Сумма оплаты', **NULLABLE)
-    payment_type = models.CharField(max_length=20, choices=PaymentType.choices, default='TRANSFER_TO_ACCOUNT',verbose_name="Способ оплаты")
+    payment_type = models.CharField(max_length=20, choices=PaymentType.choices, default='TRANSFER_TO_ACCOUNT',
+                                    verbose_name="Способ оплаты")
 
     session_id = models.CharField(max_length=150, **NULLABLE, verbose_name='id сессии')
     is_paid = models.BooleanField(default=False, verbose_name='статус платежа')
