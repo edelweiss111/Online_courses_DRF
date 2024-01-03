@@ -6,8 +6,11 @@ from study.models import Course, Lesson, Payment, Subscription
 from study.pagination import CourseAndLessonPagination
 from study.permissions import IsModerator, IsOwner
 from study.serializers import CourseSerializer, LessonSerializer, PaymentSerializer, SubscriptionSerializer
-from study.servises import create_payment, check_payment
+from study.servises import StripeService
 from study.tasks import mailing_about_updates
+import os
+
+STRIPE_API = os.getenv('STRIPE_API_KEY')
 
 
 class CourseViewSet(viewsets.ModelViewSet):
@@ -98,7 +101,7 @@ class PayLessonAPIView(generics.CreateAPIView):
         new_payment.user = self.request.user
         lesson_pk = self.kwargs.get('pk')
         new_payment.paid_lesson = Lesson.objects.get(pk=lesson_pk)
-        session = create_payment(new_payment.paid_lesson, new_payment.user)
+        session = StripeService(STRIPE_API).create_payment(new_payment.paid_lesson, new_payment.user)
         new_payment.session_id = session.id
         new_payment.payment_url = session.url
         new_payment.save()
@@ -113,7 +116,7 @@ class PayCourseAPIView(generics.CreateAPIView):
         new_payment.user = self.request.user
         course_pk = self.kwargs.get('pk')
         new_payment.paid_course = Course.objects.get(pk=course_pk)
-        session = create_payment(new_payment.paid_course, new_payment.user)
+        session = StripeService(STRIPE_API).create_payment(new_payment.paid_course, new_payment.user)
         new_payment.session_id = session.id
         new_payment.payment_url = session.url
         new_payment.save()
@@ -127,7 +130,7 @@ class CheckPaymentAPIView(generics.RetrieveAPIView):
     def get_object(self):
         self.object = super().get_object()
         session_id = self.object.session_id
-        session = check_payment(session_id)
+        session = StripeService(STRIPE_API).check_payment(session_id)
         if session.payment_status == 'paid' or session.payment_status == 'complete':
             self.object.is_paid = True
         self.object.save()

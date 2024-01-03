@@ -1,5 +1,5 @@
 from calendar import monthrange
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from celery import shared_task
 
@@ -30,14 +30,10 @@ def mailing_about_updates(course_id):
 @shared_task
 def check_user():
     """Функция блокирования неактивных пользователей"""
-    now = datetime.now()
+    now = datetime.now(tz=timezone.utc)
     month = now.month
     year = now.year
     days_count = monthrange(year, month)
-    user_list = User.objects.all()
     expiration_date = now - timedelta(days=days_count[1])
-    for user in user_list:
-        if user.last_login:
-            if expiration_date.timestamp() >= user.last_login.timestamp():
-                user.is_active = False
-                user.save()
+    user_list = User.objects.filter(last_login__lte=expiration_date, is_active=True)
+    user_list.update(is_active=False)
