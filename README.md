@@ -1,4 +1,4 @@
-# DRF_project
+# Online_courses_DRF
 Это проект LMS-системы
 
 #### Структура проекта:
