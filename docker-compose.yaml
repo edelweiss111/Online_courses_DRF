@@ -1,0 +1,54 @@
+version: '3'
+
+services:
+  celery:
+    build: .
+    tty: true
+    command: celery -A config worker -l INFO
+    depends_on:
+      - redis
+      - app
+
+  celery_beat:
+    build: .
+    tty: true
+    command: celery -A config beat -l INFO -S django
+    depends_on:
+      - redis
+      - app
+
+  redis:
+    image: redis
+    ports:
+      - '6380:6379'
+  db:
+    image: postgres
+    env_file:
+      - .env
+    volumes:
+      - pg_data:/var/lib/postgresql/data/pgdata
+    ports:
+      - '5432:5432'
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ] # если свой пользователь - pg_isready -d 'POSTGRES_DB' -U 'POSTGRES_USER'
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+
+
+  app:
+    build: .
+    tty: true
+    command: python manage.py runserver 0.0.0.0:8000
+
+    ports:
+      - '8000:8000'
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - .:/Online_courses_DRF
+
+volumes:
+  pg_data:
